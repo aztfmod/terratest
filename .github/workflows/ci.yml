@@ -98,7 +98,7 @@ jobs:
           export ARM_SKIP_PROVIDER_REGISTRATION=${{ github.event.inputs.skip_provider_registration }}
 
           # run the unit tests under the `azure` subfolder
-          go test ./azure/* -v -timeout 90m
+          go test ./azure/* -v -timeout 120m
       - name: run go test for azure
         id: azure_test
         env:
