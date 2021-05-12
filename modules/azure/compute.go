@@ -34,7 +34,7 @@ func GetVirtualMachineClientE(subscriptionID string) (*compute.VirtualMachinesCl
 
 	// Attach authorizer to the client
 	vmClient.Authorizer = *authorizer
-	return &vmClient, nil
+	return vmClient, nil
 }
 
 // VirtualMachineExists indicates whether the specifcied Azure Virtual Machine exists.

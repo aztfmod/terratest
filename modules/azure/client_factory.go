@@ -22,6 +22,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-07-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/containerservice/mgmt/2019-11-01/containerservice"
 	kvmng "github.com/Azure/azure-sdk-for-go/services/keyvault/mgmt/2016-10-01/keyvault"
+	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2019-09-01/network"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2019-06-01/subscriptions"
 	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2019-06-01/storage"
 	autorestAzure "github.com/Azure/go-autorest/autorest/azure"
@@ -63,21 +64,23 @@ func CreateSubscriptionsClientE() (subscriptions.Client, error) {
 
 // CreateVirtualMachinesClientE returns a virtual machines client instance configured with the correct BaseURI depending on
 // the Azure environment that is currently setup (or "Public", if none is setup).
-func CreateVirtualMachinesClientE(subscriptionID string) (compute.VirtualMachinesClient, error) {
+func CreateVirtualMachinesClientE(subscriptionID string) (*compute.VirtualMachinesClient, error) {
 	// Validate Azure subscription ID
 	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
 	if err != nil {
-		return compute.VirtualMachinesClient{}, err
+		return nil, err
 	}
 
 	// Lookup environment URI
 	baseURI, err := getBaseURI()
 	if err != nil {
-		return compute.VirtualMachinesClient{}, err
+		return nil, err
 	}
 
 	// Create correct client based on type passed
-	return compute.NewVirtualMachinesClientWithBaseURI(baseURI, subscriptionID), nil
+	vmClient := compute.NewVirtualMachinesClientWithBaseURI(baseURI, subscriptionID)
+
+	return &vmClient, nil
 }
 
 // snippet-tag-end::client_factory_example.CreateClient
@@ -477,6 +480,166 @@ func CreateDiagnosticsSettingsClientE(subscriptionID string) (*insights.Diagnost
 	client.Authorizer = *authorizer
 
 	return &client, nil
+}
+
+// CreateNsgDefaultRulesClientE returns an NSG default (platform) rules client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateNsgDefaultRulesClientE(subscriptionID string) (*network.DefaultSecurityRulesClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create new client
+	nsgClient := network.NewDefaultSecurityRulesClientWithBaseURI(baseURI, subscriptionID)
+	return &nsgClient, nil
+}
+
+// CreateNsgCustomRulesClientE returns an NSG custom (user) rules client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateNsgCustomRulesClientE(subscriptionID string) (*network.SecurityRulesClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create new client
+	nsgClient := network.NewSecurityRulesClientWithBaseURI(baseURI, subscriptionID)
+	return &nsgClient, nil
+}
+
+// CreateNewNetworkInterfacesClientE returns an NIC client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateNewNetworkInterfacesClientE(subscriptionID string) (*network.InterfacesClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create client
+	nicClient := network.NewInterfacesClientWithBaseURI(baseURI, subscriptionID)
+	return &nicClient, nil
+}
+
+// CreateNewNetworkInterfaceIPConfigurationClientE returns an NIC IP configuration client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateNewNetworkInterfaceIPConfigurationClientE(subscriptionID string) (*network.InterfaceIPConfigurationsClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create client
+	ipConfigClient := network.NewInterfaceIPConfigurationsClientWithBaseURI(baseURI, subscriptionID)
+	return &ipConfigClient, nil
+}
+
+// CreatePublicIPAddressesClientE returns a public IP address client instance configured with the correct BaseURI depending on
+// the Azure environment that is currently setup (or "Public", if none is setup).
+func CreatePublicIPAddressesClientE(subscriptionID string) (*network.PublicIPAddressesClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create client
+	client := network.NewPublicIPAddressesClientWithBaseURI(baseURI, subscriptionID)
+	return &client, nil
+}
+
+// CreateLoadBalancerClientE returns a load balancer client instance configured with the correct BaseURI depending on
+// the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateLoadBalancerClientE(subscriptionID string) (*network.LoadBalancersClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	//create LB client
+	client := network.NewLoadBalancersClientWithBaseURI(baseURI, subscriptionID)
+	return &client, nil
+}
+
+// CreateNewSubnetClientE returns a Subnet client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateNewSubnetClientE(subscriptionID string) (*network.SubnetsClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create client
+	subnetClient := network.NewSubnetsClientWithBaseURI(baseURI, subscriptionID)
+	return &subnetClient, nil
+}
+
+// CreateNewVirtualNetworkClientE returns a Virtual Network client instance configured with the
+// correct BaseURI depending on the Azure environment that is currently setup (or "Public", if none is setup).
+func CreateNewVirtualNetworkClientE(subscriptionID string) (*network.VirtualNetworksClient, error) {
+	// Validate Azure subscription ID
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Lookup environment URI
+	baseURI, err := getEnvironmentEndpointE(ResourceManagerEndpointName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create client
+	vnetClient := network.NewVirtualNetworksClientWithBaseURI(baseURI, subscriptionID)
+	return &vnetClient, nil
 }
 
 // GetKeyVaultURISuffixE returns the proper KeyVault URI suffix for the configured Azure environment.
