@@ -35,6 +35,11 @@ variable "cluster_name" {
   default     = "k8stest"
 }
 
+variable "k8s_version" {
+  description = "The version of Kubernetes to deploy."
+  default = "1.18.17"
+}
+
 variable "resource_group_name" {
   description = "The name to set for the resource group."
   default     = "azure-k8stest"

@@ -29,6 +29,7 @@ func TestTerraformAzureAKSExample(t *testing.T) {
 	expectedClusterName := fmt.Sprintf("terratest-aks-cluster-%s", random.UniqueId())
 	expectedResourceGroupName := fmt.Sprintf("terratest-aks-rg-%s", random.UniqueId())
 	expectedAagentCount := 3
+	expectedK8sVersion := "1.20.5"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../../examples/azure/terraform-azure-aks-example",
@@ -36,6 +37,7 @@ func TestTerraformAzureAKSExample(t *testing.T) {
 			"cluster_name":        expectedClusterName,
 			"resource_group_name": expectedResourceGroupName,
 			"agent_count":         expectedAagentCount,
+			"k8s_version":         expectedK8sVersion,
 		},
 	}
 	// At the end of the test, run `terraform destroy` to clean up any resources that were created
@@ -51,6 +53,11 @@ func TestTerraformAzureAKSExample(t *testing.T) {
 
 	// Test that the Node count matches the Terraform specification
 	assert.Equal(t, int32(expectedAagentCount), actualCount)
+
+	// Validate the correct version of Kubernetes is present
+	versionMatched, err := azure.ManagedClusterVersionMatch(t, expectedK8sVersion, expectedResourceGroupName, expectedClusterName, "")
+	require.NoError(t, err)
+	assert.True(t, versionMatched)
 
 	// Path to the Kubernetes resource config we will test
 	kubeResourcePath, err := filepath.Abs("../../examples/azure/terraform-azure-aks-example/nginx-deployment.yml")

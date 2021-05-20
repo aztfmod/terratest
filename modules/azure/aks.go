@@ -41,3 +41,21 @@ func GetManagedClusterE(t testing.TestingT, resourceGroupName, clusterName, subs
 	}
 	return &managedCluster, nil
 }
+
+// ManagedClusterVersionMatch indicates whether the expectued Kuberntes Version is deployed.
+// This function returns false and a non nil error object if an error occurs.
+func ManagedClusterVersionMatch(t testing.TestingT, k8sVersion, resourceGroupName, clusterName, subscriptionID string) (bool, error) {
+	subscriptionID, err := getTargetAzureSubscription(subscriptionID)
+	if err != nil {
+		return false, err
+	}
+	client, err := GetManagedClustersClientE(subscriptionID)
+	if err != nil {
+		return false, err
+	}
+	managedCluster, err := client.Get(context.Background(), resourceGroupName, clusterName)
+	if err != nil {
+		return false, err
+	}
+	return (*managedCluster.ManagedClusterProperties.KubernetesVersion == k8sVersion), nil
+}
