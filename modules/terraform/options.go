@@ -1,11 +1,11 @@
 package terraform
 
 import (
-	"testing"
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/ssh"
+	"github.com/gruntwork-io/terratest/modules/testing"
 	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/require"
 )
@@ -86,7 +86,7 @@ func (options *Options) Clone() (*Options, error) {
 // for retryable errors. The included retryable errors are typical errors that most terraform modules encounter during
 // testing, and are known to self resolve upon retrying.
 // This will fail the test if there are any errors in the cloning process.
-func WithDefaultRetryableErrors(t *testing.T, originalOptions *Options) *Options {
+func WithDefaultRetryableErrors(t testing.TestingT, originalOptions *Options) *Options {
 	newOptions, err := originalOptions.Clone()
 	require.NoError(t, err)
 

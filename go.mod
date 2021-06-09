@@ -10,7 +10,7 @@ require (
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.1
 	github.com/Azure/go-autorest/autorest/validation v0.3.0 // indirect
 	github.com/aws/aws-lambda-go v1.13.3
-	github.com/aws/aws-sdk-go v1.27.1
+	github.com/aws/aws-sdk-go v1.38.28
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/docker/cli v0.0.0-20200109221225-a4f60165b7a3 // indirect
 	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
@@ -38,7 +38,7 @@ require (
 	github.com/urfave/cli v1.22.2
 	github.com/zclconf/go-cty v1.2.1
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/net v0.0.0-20201021035429-f5854403a974
+	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/tools v0.0.0-20201110201400-7099162a900a // indirect
 	google.golang.org/api v0.15.0

@@ -121,7 +121,8 @@ func TgPlanAllExitCodeE(t testing.TestingT, options *Options) (int, error) {
 		return 1, fmt.Errorf("terragrunt must be set as TerraformBinary to use this method")
 	}
 
-	return GetExitCodeForTerraformCommandE(t, options, FormatArgs(options, "plan-all", "--input=false", "--lock=true", "--detailed-exitcode")...)
+	return GetExitCodeForTerraformCommandE(t, options, FormatArgs(options, "run-all", "plan", "--input=false",
+		"--lock=true", "--detailed-exitcode")...)
 }
 
 // Custom errors

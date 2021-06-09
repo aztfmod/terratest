@@ -192,6 +192,7 @@ func TestTgApplyUseLockNoError(t *testing.T) {
 		TerraformDir:    testFolder,
 		TerraformBinary: "terragrunt",
 		Lock:            true,
+		EnvVars:         map[string]string{"TF_LOG": "DEBUG"}, // debug level to get -lock CLI option passed down
 	})
 
 	out := TgApplyAll(t, options)

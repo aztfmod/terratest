@@ -25,6 +25,7 @@ var commandsWithParallelism = []string{
 	"apply",
 	"destroy",
 	"plan-all",
+	"run-all",
 	"apply-all",
 	"destroy-all",
 }
