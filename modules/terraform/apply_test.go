@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -200,4 +201,29 @@ func TestTgApplyUseLockNoError(t *testing.T) {
 	require.Contains(t, out, "Hello, World")
 	// make sure -lock CLI option is passed down correctly
 	require.Contains(t, out, "-lock=true")
+}
+
+func TestApplyWithPlanFile(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-basic-configuration", t.Name())
+	require.NoError(t, err)
+	planFilePath := filepath.Join(testFolder, "plan.out")
+
+	options := &Options{
+		TerraformDir: testFolder,
+		Vars: map[string]interface{}{
+			"cnt": 1,
+		},
+		NoColor:      true,
+		PlanFilePath: planFilePath,
+	}
+	_, err = InitAndPlanE(t, options)
+	require.NoError(t, err)
+	require.FileExists(t, planFilePath, "Plan file was not saved to expected location:", planFilePath)
+
+	out, err := ApplyE(t, options)
+	require.NoError(t, err)
+	require.Contains(t, out, "1 added, 0 changed, 0 destroyed.")
+	require.NotRegexp(t, `\[\d*m`, out, "Output should not contain color escape codes")
 }

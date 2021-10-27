@@ -3,6 +3,7 @@ package k8s
 import (
 	"fmt"
 
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	networkingv1beta1 "k8s.io/api/networking/v1beta1"
@@ -73,6 +74,21 @@ func (err PodNotAvailable) Error() string {
 // NewPodNotAvailableError returnes a PodNotAvailable struct when Kubernetes deems a pod is not available
 func NewPodNotAvailableError(pod *corev1.Pod) PodNotAvailable {
 	return PodNotAvailable{pod}
+}
+
+// JobNotSucceeded is returned when a Kubernetes job is not Succeeded
+type JobNotSucceeded struct {
+	job *batchv1.Job
+}
+
+// Error is a simple function to return a formatted error message as a string
+func (err JobNotSucceeded) Error() string {
+	return fmt.Sprintf("Job %s is not Succeeded", err.job.Name)
+}
+
+// NewJobNotSucceeded returnes a JobNotSucceeded when the status of the job is not Succeeded
+func NewJobNotSucceeded(job *batchv1.Job) JobNotSucceeded {
+	return JobNotSucceeded{job}
 }
 
 // ServiceNotAvailable is returned when a Kubernetes service is not yet available to accept traffic.

@@ -173,6 +173,34 @@ func TestCopyTerragruntFolderToTemp(t *testing.T) {
 	requireDirectoriesEqual(t, expectedDir, tmpDir)
 }
 
+func TestPathContainsTerraformStateOrVars(t *testing.T) {
+	var data = []struct {
+		desc     string
+		path     string
+		contains bool
+	}{
+		{"contains tfvars", "./folder/terraform.tfvars", true},
+		{"contains tfvars.json", "./folder/hello/terraform.tfvars.json", true},
+		{"contains state", "./folder/hello/helloagain/terraform.tfstate", true},
+		{"contains state backup", "./folder/hey/terraform.tfstate.backup", true},
+		{"does not contain any", "./folder/salut/terraform.json", false},
+	}
+
+	for _, tt := range data {
+		tt := tt
+		t.Run(tt.desc, func(t *testing.T) {
+			result := PathContainsTerraformStateOrVars(tt.path)
+			if result != tt.contains {
+				if tt.contains {
+					t.Errorf("Expected %s to contain Terraform related file", tt.path)
+				} else {
+					t.Errorf("Expected %s to not contain Terraform related file", tt.path)
+				}
+			}
+		})
+	}
+}
+
 // Diffing two directories to ensure they have the exact same files, contents, etc and showing exactly what's different
 // takes a lot of code. Why waste time on that when this functionality is already nicely implemented in the Unix/Linux
 // "diff" command? We shell out to that command at test time.

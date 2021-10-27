@@ -53,7 +53,7 @@ func testGetCurrentRefReturnsLightTagValue(t *testing.T) {
 
 	name := GetCurrentGitRef(t)
 
-	assert.Equal(t, "v0.0.1-1-g58d3ea8", name)
+	assert.Equal(t, "v0.0.1-1-g58d3ea8f", name)
 }
 
 func TestGitRefChecks(t *testing.T) {

@@ -41,7 +41,7 @@ func TestInitAndPlanWithNoError(t *testing.T) {
 	InitAndApply(t, options)
 	out, err := PlanE(t, options)
 	require.NoError(t, err)
-	require.Contains(t, out, "No changes. Infrastructure is up-to-date.")
+	require.Contains(t, out, "No changes.")
 }
 
 func TestInitAndPlanWithOutput(t *testing.T) {
@@ -82,6 +82,22 @@ func TestInitAndPlanWithPlanFile(t *testing.T) {
 	assert.Contains(t, out, "1 to add, 0 to change, 0 to destroy.")
 	assert.Contains(t, out, fmt.Sprintf("Saved the plan to: %s", planFilePath))
 	assert.FileExists(t, planFilePath, "Plan file was not saved to expected location:", planFilePath)
+}
+
+func TestInitAndPlanAndShowWithStructNoLogTempPlanFile(t *testing.T) {
+	t.Parallel()
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-basic-configuration", t.Name())
+	require.NoError(t, err)
+
+	options := &Options{
+		TerraformDir: testFolder,
+		Vars: map[string]interface{}{
+			"cnt": 1,
+		},
+	}
+	planStruct := InitAndPlanAndShowWithStructNoLogTempPlanFile(t, options)
+	assert.Equal(t, 1, len(planStruct.ResourceChangesMap))
 }
 
 func TestPlanWithExitCodeWithNoChanges(t *testing.T) {

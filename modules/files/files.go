@@ -2,10 +2,13 @@
 package files
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mattn/go-zglob"
 )
 
 // FileExists returns true if the given file exists.
@@ -150,10 +153,10 @@ func CopyFolderContentsWithFilter(source string, destination string, filter func
 	return nil
 }
 
-// PathContainsTerraformStateOrVars returns true if the path corresponds to a Terraform state file or .tfvars file.
+// PathContainsTerraformStateOrVars returns true if the path corresponds to a Terraform state file or .tfvars/.tfvars.json file.
 func PathContainsTerraformStateOrVars(path string) bool {
 	filename := filepath.Base(path)
-	return filename == "terraform.tfstate" || filename == "terraform.tfstate.backup" || filename == "terraform.tfvars"
+	return filename == "terraform.tfstate" || filename == "terraform.tfstate.backup" || filename == "terraform.tfvars" || filename == "terraform.tfvars.json"
 }
 
 // PathContainsTerraformState returns true if the path corresponds to a Terraform state file.
@@ -212,4 +215,24 @@ func copySymLink(source string, destination string) error {
 	}
 
 	return nil
+}
+
+// FindTerraformSourceFilesInDir given a directory path, finds all the terraform source files contained in it. This will
+// recursively search subdirectories, but will ignore any hidden files (which in turn ignores terraform data dirs like
+// .terraform folder).
+func FindTerraformSourceFilesInDir(dirPath string) ([]string, error) {
+	pattern := fmt.Sprintf("%s/**/*.tf", dirPath)
+	matches, err := zglob.Glob(pattern)
+	if err != nil {
+		return nil, err
+	}
+
+	tfFiles := []string{}
+	for _, match := range matches {
+		// Don't include hidden .terraform directories when finding paths to validate
+		if !PathContainsHiddenFileOrFolder(match) {
+			tfFiles = append(tfFiles, match)
+		}
+	}
+	return tfFiles, nil
 }

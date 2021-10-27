@@ -60,6 +60,8 @@ type Options struct {
 	MaxRetries               int                    // Maximum number of times to retry errors matching RetryableTerraformErrors
 	TimeBetweenRetries       time.Duration          // The amount of time to wait between retries
 	Upgrade                  bool                   // Whether the -upgrade flag of the terraform init command should be set to true or not
+	Reconfigure              bool                   // Set the -reconfigure flag to the terraform init command
+	MigrateState             bool                   // Set the -migrate-state and -force-copy (suppress 'yes' answer prompt) flag to the terraform init command
 	NoColor                  bool                   // Whether the -no-color flag will be set for any Terraform command or not
 	SshAgent                 *ssh.SshAgent          // Overrides local SSH agent with the given in-process agent
 	NoStderr                 bool                   // Disable stderr redirection

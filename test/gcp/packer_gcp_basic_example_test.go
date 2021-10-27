@@ -36,7 +36,7 @@ func TestPackerGCPBasicExample(t *testing.T) {
 
 	packerOptions := &packer.Options{
 		// The path to where the Packer template is located
-		Template: "../../examples/packer-basic-example/build.json",
+		Template: "../../examples/packer-basic-example/build-gcp.pkr.hcl",
 
 		// Variables to pass to our Packer build using -var options
 		Vars: map[string]string{
@@ -45,7 +45,7 @@ func TestPackerGCPBasicExample(t *testing.T) {
 		},
 
 		// Only build the Google Compute Image
-		Only: "googlecompute",
+		Only: "googlecompute.ubuntu-bionic",
 
 		// Configure retries for intermittent errors
 		RetryableErrors:    DefaultRetryablePackerErrors,

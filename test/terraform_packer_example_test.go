@@ -71,10 +71,10 @@ func buildAMI(t *testing.T, awsRegion string, workingDir string) {
 
 	packerOptions := &packer.Options{
 		// The path to where the Packer template is located
-		Template: "../examples/packer-docker-example/build.json",
+		Template: "../examples/packer-docker-example/build.pkr.hcl",
 
 		// Only build the AMI
-		Only: "ubuntu-ami",
+		Only: "amazon-ebs.ubuntu-ami",
 
 		// Variables to pass to our Packer build using -var options
 		Vars: map[string]string{
@@ -92,7 +92,7 @@ func buildAMI(t *testing.T, awsRegion string, workingDir string) {
 	test_structure.SavePackerOptions(t, workingDir, packerOptions)
 
 	// Build the AMI
-	amiID := packer.BuildAmi(t, packerOptions)
+	amiID := packer.BuildArtifact(t, packerOptions)
 
 	// Save the AMI ID so future test stages can use them
 	test_structure.SaveAmiId(t, workingDir, amiID)

@@ -3,9 +3,10 @@ env: &env
     GRUNTWORK_INSTALLER_VERSION: v0.0.36
     MODULE_CI_VERSION: v0.33.3
     MODULE_GCP_CI_VERSION: v0.1.1
-    TERRAFORM_VERSION: 0.15.0
-    TERRAGRUNT_VERSION: v0.28.24
-    PACKER_VERSION: 1.6.6
+    TERRAFORM_VERSION: 1.0.3
+    PACKER_VERSION: 1.7.4
+    TERRAGRUNT_VERSION: v0.32.3
+    OPA_VERSION: v0.33.1
     GO_VERSION: 1.16.3
     GO111MODULE: auto
     K8S_VERSION: v1.15.0  # Same as EKS
@@ -15,6 +16,13 @@ env: &env
     BIN_BUILD_PARALLELISM: 3
 
 defaults: &defaults
+  machine:
+    enabled: true
+    image: "ubuntu-2004:202107-02"
+  <<: *env
+
+# minikube setup requires ubuntu16.04
+minikube_defaults: &minikube_defaults
   machine:
     enabled: true
     image: "ubuntu-1604:201903-01"
@@ -45,6 +53,12 @@ install_gruntwork_utils: &install_gruntwork_utils
       --packer-version ${PACKER_VERSION} \
       --go-version NONE
 
+    # Install OPA
+    echo "Installing OPA version ${OPA_VERSION}"
+    curl -sLO "https://github.com/open-policy-agent/opa/releases/download/${OPA_VERSION}/opa_linux_amd64_static"
+    chmod +x ./opa_linux_amd64_static
+    sudo mv ./opa_linux_amd64_static /usr/local/bin/opa
+
     # Temporary fix for installing go - remove when we can update gruntwork-module-circleci-helpers to version with fix
     echo "Installing Go version $version"
     curl -O --silent --location --fail --show-error "https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz"
@@ -52,6 +66,17 @@ install_gruntwork_utils: &install_gruntwork_utils
     sudo tar -C /usr/local -xzf "go${GO_VERSION}.linux-amd64.tar.gz"
     sudo ln -s /usr/local/go/bin/go /usr/bin/go
     echo "The installed version of Go is now $(go version)"
+
+install_docker_buildx: &install_docker_buildx
+  name: install docker buildx
+  command: |
+    curl -sLO https://github.com/docker/buildx/releases/download/v0.6.1/buildx-v0.6.1.linux-amd64
+    mkdir -p ~/.docker/cli-plugins
+    mv buildx-v0.6.1.linux-amd64 ~/.docker/cli-plugins/docker-buildx
+    chmod a+x ~/.docker/cli-plugins/docker-buildx
+
+    # Verify buildx is available
+    docker buildx create --use
 
 configure_environment_for_gcp: &configure_environment_for_gcp
   name: configure environment for gcp
@@ -143,6 +168,8 @@ jobs:
 
       - run:
           <<: *install_gruntwork_utils
+      - run:
+          <<: *install_docker_buildx
 
       # The weird way you have to set PATH in Circle 2.0
       - run: echo 'export PATH=$HOME/.local/bin:$HOME/terraform:$HOME/packer:$PATH' >> $BASH_ENV
@@ -209,7 +236,7 @@ jobs:
           path: /tmp/logs
 
   kubernetes_test:
-    <<: *defaults
+    <<: *minikube_defaults
     steps:
       - attach_workspace:
           at: /home/circleci
@@ -245,7 +272,7 @@ jobs:
 
 
   helm_test:
-    <<: *defaults
+    <<: *minikube_defaults
     steps:
       - attach_workspace:
           at: /home/circleci

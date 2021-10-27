@@ -36,11 +36,7 @@ func TestTerraformAwsLambdaExample(t *testing.T) {
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"function_name": functionName,
-		},
-
-		// Environment variables to set when running Terraform
-		EnvVars: map[string]string{
-			"AWS_DEFAULT_REGION": awsRegion,
+			"region":        awsRegion,
 		},
 	})
 
@@ -93,11 +89,7 @@ func TestTerraformAwsLambdaWithParamsExample(t *testing.T) {
 		// Variables to pass to our Terraform code using -var options
 		Vars: map[string]interface{}{
 			"function_name": functionName,
-		},
-
-		// Environment variables to set when running Terraform
-		EnvVars: map[string]string{
-			"AWS_DEFAULT_REGION": awsRegion,
+			"region":        awsRegion,
 		},
 	})
 

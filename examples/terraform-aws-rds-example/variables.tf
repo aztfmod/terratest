@@ -11,6 +11,10 @@
 # You must provide a value for each of these parameters.
 # Given these are credentials, security of the values should be considered.
 # ---------------------------------------------------------------------------------------------------------------------
+variable "region" {
+  description = "The AWS region to deploy to"
+  type        = string
+}
 
 variable "username" {
   description = "Master username of the DB"

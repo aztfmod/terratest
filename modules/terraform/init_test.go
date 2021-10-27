@@ -82,3 +82,63 @@ func TestInitPluginDir(t *testing.T) {
 
 	assert.Contains(t, initOutput, "(unauthenticated)")
 }
+
+func TestInitReconfigureBackend(t *testing.T) {
+	t.Parallel()
+
+	stateDirectory, err := ioutil.TempDir("", t.Name())
+	require.NoError(t, err)
+	defer os.RemoveAll(stateDirectory)
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-backend", t.Name())
+	require.NoError(t, err)
+	defer os.RemoveAll(testFolder)
+
+	options := &Options{
+		TerraformDir: testFolder,
+		BackendConfig: map[string]interface{}{
+			"path":          filepath.Join(stateDirectory, "backend.tfstate"),
+			"workspace_dir": "current",
+		},
+	}
+
+	Init(t, options)
+
+	options.BackendConfig["workspace_dir"] = "new"
+	_, err = InitE(t, options)
+	assert.Error(t, err, "Backend initialization with changed configuration should fail without -reconfigure option")
+
+	options.Reconfigure = true
+	_, err = InitE(t, options)
+	assert.NoError(t, err, "Backend initialization with changed configuration should success with -reconfigure option")
+}
+
+func TestInitBackendMigration(t *testing.T) {
+	t.Parallel()
+
+	stateDirectory, err := ioutil.TempDir("", t.Name())
+	require.NoError(t, err)
+	defer os.RemoveAll(stateDirectory)
+
+	testFolder, err := files.CopyTerraformFolderToTemp("../../test/fixtures/terraform-backend", t.Name())
+	require.NoError(t, err)
+	defer os.RemoveAll(testFolder)
+
+	options := &Options{
+		TerraformDir: testFolder,
+		BackendConfig: map[string]interface{}{
+			"path":          filepath.Join(stateDirectory, "backend.tfstate"),
+			"workspace_dir": "current",
+		},
+	}
+
+	Init(t, options)
+
+	options.BackendConfig["workspace_dir"] = "new"
+	_, err = InitE(t, options)
+	assert.Error(t, err, "Backend initialization with changed configuration should fail without -migrate-state option")
+
+	options.MigrateState = true
+	_, err = InitE(t, options)
+	assert.NoError(t, err, "Backend initialization with changed configuration should success with -migrate-state option")
+}

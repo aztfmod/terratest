@@ -4,7 +4,7 @@
 version: '3'
 services:
   web_app:
-    # The name we use for the Docker image in build.json
+    # The name we use for the Docker image in build.json (or build.pkr.hcl)
     image: gruntwork/packer-docker-example
 
     # Run the sample web app on port 8080
